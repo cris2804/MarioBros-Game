@@ -1,3 +1,5 @@
+package com.uni.mariobrosgame;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,7 +30,7 @@ public class ManejadorDeConHilos implements Runnable{
                 while(!terminado && in.hasNextLine()){
                     String linea = in.nextLine();
                     //out.println("Eco"+linea);
-                    System.out.println("Eco de:"+contador+" dice:"+linea);
+                    System.out.println("Eco de: "+contador+" dice:"+linea);
                     String arrayString[] = linea.split("\\s+");
                     int x = Integer.parseInt(arrayString[0]);
                     int y = Integer.parseInt(arrayString[1]);

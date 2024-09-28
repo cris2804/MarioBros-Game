@@ -1,3 +1,4 @@
+package com.uni.mariobrosgame;
 
 import java.io.IOException;
 import java.net.ServerSocket;
