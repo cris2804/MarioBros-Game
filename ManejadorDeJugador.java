@@ -8,7 +8,7 @@ public class ManejadorDeJugador extends Thread { // Extiende Thread para que cad
     private Tablero tablero;
     private int idJugador;
 
-    public ManejadorDeJugador(Socket socket, Tablero tablero, int idJugador) {
+    public ManejadorDeJugador(Socket socket, Tablero tablero, int idJugador, ServidorDeMarioBros servidorDeMarioBros) {
         this.socket = socket;
         this.tablero = tablero;
         this.idJugador = idJugador;
@@ -48,7 +48,7 @@ public class ManejadorDeJugador extends Thread { // Extiende Thread para que cad
         tablero.actualizarPosicion(idJugador, comando);
     }
 
-    private void enviarTablero() {
+    void enviarTablero() {
         // Enviar el estado del tablero al cliente
         salida.println(tablero.toString());
     }

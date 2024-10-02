@@ -1,9 +1,9 @@
+// Parte del servidor (ServidorDeMarioBros.java)
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-// El servidor ya está implementado con hilos. Puedes utilizar el código anterior.
 
 public class ServidorDeMarioBros {
     private static final int PUERTO = 8080;
@@ -20,13 +20,20 @@ public class ServidorDeMarioBros {
             System.out.println("Servidor iniciado en el puerto " + PUERTO);
             while (true) {
                 Socket socket = servidor.accept();
-                ManejadorDeJugador nuevoJugador = new ManejadorDeJugador(socket, tablero, jugadores.size() + 1);
+                ManejadorDeJugador nuevoJugador = new ManejadorDeJugador(socket, tablero, jugadores.size() + 1, this);
                 jugadores.add(nuevoJugador);
                 nuevoJugador.start();
                 System.out.println("Nuevo jugador conectado. Total de jugadores: " + jugadores.size());
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    // Método para enviar el tablero a todos los jugadores
+    public synchronized void enviarTableroATodos() {
+        for (ManejadorDeJugador jugador : jugadores) {
+            jugador.enviarTablero();
         }
     }
 

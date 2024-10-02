@@ -9,7 +9,7 @@ public class Tablero {
     private void inicializarTablero() {
         for (int i = 0; i < mapa.length; i++) {
             for (int j = 0; j < mapa[i].length; j++) {
-                mapa[i][j] = ' '; // Inicializar con espacios vacíos
+                mapa[i][j] = '-'; // Inicializar con espacios vacíos
             }
         }
     }
