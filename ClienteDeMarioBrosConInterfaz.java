@@ -8,29 +8,123 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
     private Socket socket;
     private BufferedReader entrada;
     private PrintWriter salida;
-    private Tablero areaTablero;
+    private JTextArea areaTablero;
     private String nombreJugador;
-    private char[][] mapa;
 
     public ClienteDeMarioBrosConInterfaz(String direccion, int puerto, String nombreJugador) {
         this.nombreJugador = nombreJugador;
-        mapa = new char[20][40];
-        areaTablero = new Tablero(mapa);
-        areaTablero.inicializarMapa();
+
+        // Configuración de la interfaz gráfica con GridBagLayout
         setTitle("Mario Bros Multijugador - " + nombreJugador);
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        add(areaTablero, BorderLayout.CENTER);
-        conectarServidor(direccion, puerto);
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                manejarMovimiento(e);
-            }
-        });
+        // Panel para la IP, puerto y botón de conexión
+        JPanel panelConexion = new JPanel(new GridBagLayout());
+        GridBagConstraints gbcc = new GridBagConstraints();
 
-        setFocusable(true);
+        JLabel labelIp = new JLabel("IP");
+        JTextField campoIp = new JTextField(direccion, 10);
+        JLabel labelPuerto = new JLabel("Port");
+        JTextField campoPuerto = new JTextField(String.valueOf(puerto), 5);
+        JButton botonConectar = new JButton("Connect");
+
+        gbcc.insets = new Insets(5, 5, 5, 5); // Espaciado interno
+
+        // Añadiendo componentes a panelConexion
+        gbcc.gridx = 0;
+        gbcc.gridy = 0;
+        panelConexion.add(labelIp, gbcc);
+
+        gbcc.gridx = 1;
+        gbcc.gridy = 0;
+        panelConexion.add(campoIp, gbcc);
+
+        gbcc.gridx = 2;
+        gbcc.gridy = 0;
+        panelConexion.add(labelPuerto, gbcc);
+
+        gbcc.gridx = 3;
+        gbcc.gridy = 0;
+        panelConexion.add(campoPuerto, gbcc);
+
+        gbcc.gridx = 4;
+        gbcc.gridy = 0;
+        panelConexion.add(botonConectar, gbcc);
+
+        // Añadir panel de conexión al JFrame
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2; // Hacer que el panel ocupe dos columnas
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(panelConexion, gbc);
+
+        // Panel para el tablero (mapa)
+        areaTablero = new JTextArea(20, 40); // Ajusta el tamaño si es necesario
+        areaTablero.setFont(new Font("Monospaced", Font.PLAIN, 14)); // Fuente monoespaciada para el mapa
+        areaTablero.setEditable(false); // No permitir que el usuario edite el área de texto
+        JScrollPane scrollPane = new JScrollPane(areaTablero);
+
+        // Añadir el área del tablero al JFrame
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1; // Volver a una columna
+        gbc.gridheight = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        add(scrollPane, gbc);
+
+        // Panel para los botones de control (movimiento)
+        JPanel panelControl = new JPanel(new GridBagLayout());
+        GridBagConstraints gbccControl = new GridBagConstraints();
+
+        JButton btnIzquierda = new JButton("<");
+        JButton btnDerecha = new JButton(">");
+        JButton btnArriba = new JButton("^");
+        JButton btnAbajo = new JButton("V");
+
+        gbccControl.insets = new Insets(5, 5, 5, 5); // Espaciado interno
+
+        gbccControl.gridx = 1;
+        gbccControl.gridy = 0;
+        panelControl.add(btnArriba, gbccControl);
+
+        gbccControl.gridx = 0;
+        gbccControl.gridy = 1;
+        panelControl.add(btnIzquierda, gbccControl);
+
+        gbccControl.gridx = 1;
+        gbccControl.gridy = 1;
+        panelControl.add(new JLabel(""), gbccControl); // Espacio vacío
+
+        gbccControl.gridx = 2;
+        gbccControl.gridy = 1;
+        panelControl.add(btnDerecha, gbccControl);
+
+        gbccControl.gridx = 1;
+        gbccControl.gridy = 2;
+        panelControl.add(btnAbajo, gbccControl);
+
+        // Añadir panel de control de botones al JFrame
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.gridheight = 1;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.CENTER;
+        add(panelControl, gbc);
+
+        // Conectar al servidor al hacer clic en el botón de conexión
+        botonConectar.addActionListener(e -> conectarServidor(campoIp.getText(), Integer.parseInt(campoPuerto.getText())));
+
+        // Manejo de los botones presionados para el movimiento
+        btnIzquierda.addActionListener(e -> manejarMovimiento("IZQUIERDA"));
+        btnDerecha.addActionListener(e -> manejarMovimiento("DERECHA"));
+        btnArriba.addActionListener(e -> manejarMovimiento("ARRIBA"));
+        btnAbajo.addActionListener(e -> manejarMovimiento("ABAJO"));
+
         setVisible(true);
     }
 
@@ -48,36 +142,12 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
         }
     }
 
-    private void manejarMovimiento(KeyEvent e) {
-        String comando = null;
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_LEFT:
-                comando = "IZQUIERDA";
-                break;
-            case KeyEvent.VK_RIGHT:
-                comando = "DERECHA";
-                break;
-            case KeyEvent.VK_UP:
-                comando = "SALTAR";
-                break;
-            case KeyEvent.VK_DOWN:
-                comando = "ABAJO";
-                break;
-        }
+    private void manejarMovimiento(String comando) {
         if (comando != null) {
-            salida.println(nombreJugador + " " + comando); // Enviar comando al servidor
+            salida.println(nombreJugador + " " + comando); // Envía el comando al servidor
         }
     }
-    private void actualizarTableroConMensaje(String mensaje) {
-        System.out.println("Mensaje recibido del servidor: " + mensaje); // Debug: verifica el mensaje recibido
-        String[] lineas = mensaje.split("\n");
-        for (int i = 0; i < lineas.length && i < mapa.length; ++i) {
-            for (int j = 0; j < lineas[i].length() && j < mapa[i].length; ++j) {
-                mapa[i][j] = lineas[i].charAt(j);
-            }
-        }
-        SwingUtilities.invokeLater(() -> areaTablero.actualizarMapa(mapa));
-    }
+
     private class EscuchaServidor implements Runnable {
         @Override
         public void run() {
@@ -85,7 +155,7 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
                 String mensaje;
                 while ((mensaje = entrada.readLine()) != null) {
                     // Actualizar el tablero en la interfaz gráfica
-                    actualizarTableroConMensaje(mensaje);
+                    areaTablero.setText(mensaje);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -96,6 +166,6 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
     public static void main(String[] args) {
         // Iniciar el cliente con interfaz gráfica
         String nombreJugador = JOptionPane.showInputDialog("Ingresa tu nombre de jugador:");
-        new ClienteDeMarioBrosConInterfaz("localhost", 8080, nombreJugador);
+        new ClienteDeMarioBrosConInterfaz("10.10.0.107", 5684, nombreJugador);  // Cambia la IP y puerto según tu configuración
     }
 }

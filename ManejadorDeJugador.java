@@ -3,17 +3,18 @@ import java.net.Socket;
 
 public class ManejadorDeJugador extends Thread { // Extiende Thread para que cada jugador tenga su propio hilo
     private Socket socket;
+    private BufferedReader entrada;
     private PrintWriter salida;
-    private char[][] tablero;
+    private Tablero tablero;
     private int idJugador;
 
-    public ManejadorDeJugador(Socket _socket, char[][] _tablero, int _idJugador) {
-        this.socket = _socket;
-        this.tablero = _tablero;
-        this.idJugador = _idJugador;
+    public ManejadorDeJugador(Socket socket, Tablero tablero, int idJugador, ServidorDeMarioBros servidorDeMarioBros) {
+        this.socket = socket;
+        this.tablero = tablero;
+        this.idJugador = idJugador;
         try {
+            entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             salida = new PrintWriter(socket.getOutputStream(), true);
-            ServidorDeMarioBros.agregarJugador(salida);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -22,13 +23,14 @@ public class ManejadorDeJugador extends Thread { // Extiende Thread para que cad
     @Override
     public void run() {
         try {
-            BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String mensaje;
             // Escucha los comandos del jugador
-            salida.println(ServidorDeMarioBros.obtenerEstadoInicialTablero());
             while ((mensaje = entrada.readLine()) != null) {
                 System.out.println("Jugador " + idJugador + ": " + mensaje);
-                ServidorDeMarioBros.procesarComando(idJugador, mensaje);
+                procesarComando(mensaje); // Procesa los comandos del jugador, como movimiento
+
+                // Actualiza y envía el tablero a este jugador
+                enviarTablero();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -38,8 +40,16 @@ public class ManejadorDeJugador extends Thread { // Extiende Thread para que cad
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            ServidorDeMarioBros.removerJugador(salida);
         }
     }
 
+    private void procesarComando(String comando) {
+        // Lógica para manejar los comandos del jugador y actualizar el tablero
+        tablero.actualizarPosicion(idJugador, comando);
+    }
+
+    void enviarTablero() {
+        // Enviar el estado del tablero al cliente
+        salida.println(tablero.toString());
+    }
 }

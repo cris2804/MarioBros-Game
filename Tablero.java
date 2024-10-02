@@ -1,48 +1,33 @@
-import javax.swing.*;
-import java.awt.*;
-
-public class Tablero extends JPanel {
+public class Tablero {
     private char[][] mapa;
 
-    public Tablero(char[][] mapa) {
-        this.mapa = mapa;
-        setPreferredSize(new Dimension(800, 600)); // Ajusta el tamaño según tus necesidades
+    public Tablero() {
+        mapa = new char[20][40]; // 20 filas, 40 columnas
+        inicializarTablero();
     }
-    public void inicializarMapa() {
+
+    private void inicializarTablero() {
         for (int i = 0; i < mapa.length; i++) {
             for (int j = 0; j < mapa[i].length; j++) {
-                mapa[i][j] = '#'; // Puedes elegir el carácter que desees para las celdas vacías
+                mapa[i][j] = '-'; // Inicializar con espacios vacíos
             }
         }
-        repaint(); // Repaint para asegurarte de que se muestra el mapa inicial
     }
+
+    public void actualizarPosicion(int idJugador, String accion) {
+        // Aquí se manejará la lógica de actualización de posiciones basado en las acciones de los jugadores
+        System.out.println("Jugador " + idJugador + " hizo: " + accion);
+    }
+
     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        dibujarMapa(g);
-    }
-
-    private void dibujarMapa(Graphics g) {
-        int cellSize = 30; // Tamaño de cada celda de la grilla
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < mapa.length; i++) {
             for (int j = 0; j < mapa[i].length; j++) {
-                // Dibujar el fondo de la celda
-                g.setColor(Color.LIGHT_GRAY);
-                g.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
-
-                // Dibujar el carácter en la celda
-                g.setColor(Color.BLACK);
-                g.drawString(String.valueOf(mapa[i][j]), j * cellSize + cellSize / 3, i * cellSize + 20);
-
-                // Dibujar el borde de la celda
-                g.setColor(Color.BLACK);
-                g.drawRect(j * cellSize, i * cellSize, cellSize, cellSize);
+                sb.append(mapa[i][j]);
             }
+            sb.append("\n");
         }
-    }
-
-    public void actualizarMapa(char[][] nuevoMapa) {
-        this.mapa = nuevoMapa;
-        repaint(); // Llama a repaint para actualizar la visualización
+        return sb.toString();
     }
 }
