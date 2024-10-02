@@ -6,12 +6,14 @@ public class ManejadorDeJugador extends Thread { // Extiende Thread para que cad
     private BufferedReader entrada;
     private PrintWriter salida;
     private Tablero tablero;
+    private ServidorDeMarioBros servidor;
     private int idJugador;
 
-    public ManejadorDeJugador(Socket socket, Tablero tablero, int idJugador, ServidorDeMarioBros servidorDeMarioBros) {
+    public ManejadorDeJugador(Socket socket, Tablero tablero, int idJugador, ServidorDeMarioBros servidor) {
         this.socket = socket;
         this.tablero = tablero;
         this.idJugador = idJugador;
+        this.servidor = servidor;
         try {
             entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             salida = new PrintWriter(socket.getOutputStream(), true);
@@ -25,12 +27,13 @@ public class ManejadorDeJugador extends Thread { // Extiende Thread para que cad
         try {
             String mensaje;
             // Escucha los comandos del jugador
+
             while ((mensaje = entrada.readLine()) != null) {
-                System.out.println("Jugador " + idJugador + ": " + mensaje);
+                //System.out.println("Jugador " + idJugador + ": " + mensaje);
                 procesarComando(mensaje); // Procesa los comandos del jugador, como movimiento
 
                 // Actualiza y envía el tablero a este jugador
-                enviarTablero();
+                servidor.enviarTableroATodos();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -43,12 +46,17 @@ public class ManejadorDeJugador extends Thread { // Extiende Thread para que cad
         }
     }
 
-    private void procesarComando(String comando) {
-        // Lógica para manejar los comandos del jugador y actualizar el tablero
-        tablero.actualizarPosicion(idJugador, comando);
+    private void procesarComando(String mensaje) {
+        String[] partes = mensaje.split(" ");
+        if (partes.length == 2) {
+            String accion = partes[1];
+            tablero.actualizarPosicion(idJugador, accion);
+        }
     }
 
-    void enviarTablero() {
+    public void enviarTablero() {
+        //System.out.println("Enviando tablero al jugador " + idJugador + ":");
+        System.out.println(tablero.toString());
         // Enviar el estado del tablero al cliente
         salida.println(tablero.toString());
     }

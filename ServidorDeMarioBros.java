@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServidorDeMarioBros {
-    private static final int PUERTO = 5684;
+    private static final int PUERTO = 8080;
     private List<ManejadorDeJugador> jugadores;
     private Tablero tablero;
 
@@ -30,7 +30,7 @@ public class ServidorDeMarioBros {
         }
     }
 
-    // Método para enviar el tablero a todos los jugadores
+    // Metodo para enviar el tablero a todos los jugadores
     public synchronized void enviarTableroATodos() {
         for (ManejadorDeJugador jugador : jugadores) {
             jugador.enviarTablero();

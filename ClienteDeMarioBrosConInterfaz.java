@@ -154,8 +154,9 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
             try {
                 String mensaje;
                 while ((mensaje = entrada.readLine()) != null) {
-                    // Actualizar el tablero en la interfaz gráfica
-                    areaTablero.setText(mensaje);
+                    final String mensajeFinal = mensaje;
+                    //System.out.println("Tablero recibido: \n" + mensaje);  // Debug: Mostrar el tablero recibido
+                    SwingUtilities.invokeLater(() -> areaTablero.setText(mensajeFinal));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -166,6 +167,6 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
     public static void main(String[] args) {
         // Iniciar el cliente con interfaz gráfica
         String nombreJugador = JOptionPane.showInputDialog("Ingresa tu nombre de jugador:");
-        new ClienteDeMarioBrosConInterfaz("10.10.0.107", 5684, nombreJugador);  // Cambia la IP y puerto según tu configuración
+        new ClienteDeMarioBrosConInterfaz("127.0.0.1", 8080, nombreJugador);  // Cambia la IP y puerto según tu configuración
     }
 }
