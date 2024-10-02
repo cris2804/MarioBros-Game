@@ -8,27 +8,20 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
     private Socket socket;
     private BufferedReader entrada;
     private PrintWriter salida;
-    private JTextArea areaTablero;
+    private Tablero areaTablero;
     private String nombreJugador;
+    private char[][] mapa;
 
     public ClienteDeMarioBrosConInterfaz(String direccion, int puerto, String nombreJugador) {
         this.nombreJugador = nombreJugador;
-
-        // Configuración de la interfaz gráfica
-        setTitle("Mario Bros Multijugador - " + nombreJugador);
+        mapa = new char[20][40];
+        setTitle("Mario Bros Multijugador -" + nombreJugador);
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        // Área donde se mostrará el tablero del juego
-        areaTablero = new JTextArea();
-        areaTablero.setFont(new Font("Monospaced", Font.PLAIN, 16));
-        areaTablero.setEditable(false);
-        add(new JScrollPane(areaTablero), BorderLayout.CENTER);
-
-        // Conectar al servidor
+        areaTablero = new Tablero(mapa);
+        add(areaTablero, BorderLayout.CENTER);
         conectarServidor(direccion, puerto);
 
-        // Manejo de las teclas presionadas para el movimiento
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -36,7 +29,7 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
             }
         });
 
-        setFocusable(true); // Permitir que la ventana reciba eventos de teclado
+        setFocusable(true);
         setVisible(true);
     }
 
@@ -74,7 +67,15 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
             salida.println(nombreJugador + " " + comando); // Enviar comando al servidor
         }
     }
-
+    private void actualizarTableroConMensaje(String mensaje) {
+        String[] lineas = mensaje.split("\n");
+        for (int i = 0; i < lineas.length && i < mapa.length; ++i) {
+            for (int j = 0; j < lineas[i].length() && j < mapa[i].length; ++j) {
+                mapa[i][j] = lineas[i].charAt(j);
+            }
+        }
+        areaTablero.actualizarMapa(mapa);
+    }
     private class EscuchaServidor implements Runnable {
         @Override
         public void run() {
@@ -82,7 +83,7 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
                 String mensaje;
                 while ((mensaje = entrada.readLine()) != null) {
                     // Actualizar el tablero en la interfaz gráfica
-                    areaTablero.setText(mensaje);
+                    actualizarTableroConMensaje(mensaje);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
