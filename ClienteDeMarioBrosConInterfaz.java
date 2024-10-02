@@ -15,10 +15,11 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
     public ClienteDeMarioBrosConInterfaz(String direccion, int puerto, String nombreJugador) {
         this.nombreJugador = nombreJugador;
         mapa = new char[20][40];
-        setTitle("Mario Bros Multijugador -" + nombreJugador);
+        areaTablero = new Tablero(mapa);
+        areaTablero.inicializarMapa();
+        setTitle("Mario Bros Multijugador - " + nombreJugador);
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        areaTablero = new Tablero(mapa);
         add(areaTablero, BorderLayout.CENTER);
         conectarServidor(direccion, puerto);
 
@@ -68,13 +69,14 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
         }
     }
     private void actualizarTableroConMensaje(String mensaje) {
+        System.out.println("Mensaje recibido del servidor: " + mensaje); // Debug: verifica el mensaje recibido
         String[] lineas = mensaje.split("\n");
         for (int i = 0; i < lineas.length && i < mapa.length; ++i) {
             for (int j = 0; j < lineas[i].length() && j < mapa[i].length; ++j) {
                 mapa[i][j] = lineas[i].charAt(j);
             }
         }
-        areaTablero.actualizarMapa(mapa);
+        SwingUtilities.invokeLater(() -> areaTablero.actualizarMapa(mapa));
     }
     private class EscuchaServidor implements Runnable {
         @Override

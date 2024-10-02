@@ -1,12 +1,15 @@
+import java.awt.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.stream.Collectors;
 // El servidor ya está implementado con hilos. Puedes utilizar el código anterior.
 
 public class ServidorDeMarioBros {
     private static final int PUERTO = 8080;
     private static char[][] tablero = new char[20][40];
     private static Set<PrintWriter> jugadores = new HashSet<>();
+    private static Map<Integer, Point> posicionesJugadores = new HashMap<>();
     private static int contadorJugadores = 0;
 
     public static void main(String[] args) {
@@ -47,17 +50,28 @@ public class ServidorDeMarioBros {
     static void agregarJugador(PrintWriter salida) {
         synchronized (jugadores) {
             jugadores.add(salida);
+            int idJugador = jugadores.size();
+            posicionesJugadores.put(idJugador, new Point(0, 0));
+            tablero[0][0] = (char) ('A' + idJugador - 1);
         }
     }
 
     static void removerJugador(PrintWriter salida) {
         synchronized (jugadores) {
             jugadores.remove(salida);
+            /*
+            for (Map.Entry<Integer, PrintWriter> entry : jugadores.stream().collect(Collectors.toList()).entrySet()) {
+
+            }
+            */
         }
     }
     static void procesarComando(int idJugador, String comando) {
-        int x = 0;
-        int y = 0;
+        Point posicion = posicionesJugadores.get(idJugador);
+        int x = (int) posicion.getX();
+        int y = (int) posicion.getY();
+        char jugadorChar = (char) ('A' + idJugador - 1);
+        tablero[y][x] = '#';
         switch (comando) {
             case "IZQUIERDA":
                 if (x > 0) x--; // Mover a la izquierda
@@ -72,7 +86,8 @@ public class ServidorDeMarioBros {
                 // Lógica para mover hacia abajo (puedes implementar esto más adelante)
                 break;
         }
-        tablero[y][x] = 'J';
+        posicionesJugadores.put(idJugador, new Point(x, y));
+        tablero[y][x] = jugadorChar;
         enviarEstadoTablero(); // Enviar el tablero actualizado a todos los jugadores
     }
 }

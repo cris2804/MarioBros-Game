@@ -1,47 +1,48 @@
-import javax.swing.JTextArea;
-import javax.swing.JPanel;
-import java.awt.BorderLayout;
-import java.util.Arrays;
+import javax.swing.*;
+import java.awt.*;
 
 public class Tablero extends JPanel {
-    private JTextArea textArea;
     private char[][] mapa;
 
     public Tablero(char[][] mapa) {
         this.mapa = mapa;
-        this.textArea = new JTextArea(20, 40);
-        textArea.setEditable(false);
-        textArea.setFont(textArea.getFont().deriveFont(16f));
-        setLayout(new BorderLayout());
-        add(textArea, BorderLayout.CENTER);
-        actualizarTexto();
+        setPreferredSize(new Dimension(800, 600)); // Ajusta el tamaño según tus necesidades
     }
-    private void actualizarTexto() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < mapa.length; ++i) {
-            for (int j = 0; j < mapa[i].length; ++j) {
-                sb.append(mapa[i][j]);
+    public void inicializarMapa() {
+        for (int i = 0; i < mapa.length; i++) {
+            for (int j = 0; j < mapa[i].length; j++) {
+                mapa[i][j] = '#'; // Puedes elegir el carácter que desees para las celdas vacías
             }
-            sb.append("\n");
         }
-        textArea.setText(sb.toString());
-        textArea.revalidate();
-        textArea.repaint();
+        repaint(); // Repaint para asegurarte de que se muestra el mapa inicial
+    }
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        dibujarMapa(g);
     }
 
-    public void actualizarPosicion(int idJugador, String accion) {
-        // Aquí se manejará la lógica de actualización de posiciones basado en las acciones de los jugadores
-        System.out.println("Jugador " + idJugador + " hizo: " + accion);
+    private void dibujarMapa(Graphics g) {
+        int cellSize = 30; // Tamaño de cada celda de la grilla
+        for (int i = 0; i < mapa.length; i++) {
+            for (int j = 0; j < mapa[i].length; j++) {
+                // Dibujar el fondo de la celda
+                g.setColor(Color.LIGHT_GRAY);
+                g.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+
+                // Dibujar el carácter en la celda
+                g.setColor(Color.BLACK);
+                g.drawString(String.valueOf(mapa[i][j]), j * cellSize + cellSize / 3, i * cellSize + 20);
+
+                // Dibujar el borde de la celda
+                g.setColor(Color.BLACK);
+                g.drawRect(j * cellSize, i * cellSize, cellSize, cellSize);
+            }
+        }
     }
 
     public void actualizarMapa(char[][] nuevoMapa) {
         this.mapa = nuevoMapa;
-        actualizarTexto();
-        System.out.println("Mapa actualizado:");
-        /*
-        for (char[] fila : mapa) {
-            System.out.println(Arrays.toString(fila));
-        }
-        */
+        repaint(); // Llama a repaint para actualizar la visualización
     }
 }
