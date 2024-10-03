@@ -21,6 +21,9 @@ public class Tablero {
             }
         }
     }
+    public void actualizaFila(int fila, char[] nuevaFila) {
+        mapa[fila] = nuevaFila;
+    }
     void inicializarPosiciones() {
         for (int i = 0; i < posicionesX.length; ++i) {
             posicionesX[i] = i;
@@ -80,14 +83,18 @@ public class Tablero {
         }
         return representacion;
     }
-
-    //@Override
+    public void actualizarTablero(String tableroRecibido) {
+        String[] lineas = tableroRecibido.split("\n");
+        for (int i = 0; i < lineas.length; ++i) {
+            char[] fila = lineas[i].toCharArray();
+            mapa[i] = fila;
+        }
+    }
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < mapa.length; i++) {
-            for (int j = 0; j < mapa[i].length; j++) {
-                sb.append(mapa[i][j]);
-            }
+            sb.append(mapa[i]);
             sb.append("\n");
         }
         return sb.toString();

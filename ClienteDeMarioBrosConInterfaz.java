@@ -10,10 +10,11 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
     private PrintWriter salida;
     private JTextArea areaTablero;
     private String nombreJugador;
+    private Tablero tablero;
 
     public ClienteDeMarioBrosConInterfaz(String direccion, int puerto, String nombreJugador) {
         this.nombreJugador = nombreJugador;
-
+        this.tablero = new Tablero();
         // Configuración de la interfaz gráfica con GridBagLayout
         setTitle("Mario Bros Multijugador - " + nombreJugador);
         setSize(800, 600);
@@ -66,6 +67,7 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
         areaTablero.setFont(new Font("Monospaced", Font.PLAIN, 14)); // Fuente monoespaciada para el mapa
         areaTablero.setEditable(false); // No permitir que el usuario edite el área de texto
         JScrollPane scrollPane = new JScrollPane(areaTablero);
+        areaTablero.setText(tablero.toString());
 
         // Añadir el área del tablero al JFrame
         gbc.gridx = 0;
@@ -73,8 +75,9 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
         gbc.gridwidth = 1; // Volver a una columna
         gbc.gridheight = 2;
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1;
+        gbc.weightx = 0.8;
         gbc.weighty = 1;
+        gbc.insets = new Insets(0, 10, 10, 0);
         add(scrollPane, gbc);
 
         // Panel para los botones de control (movimiento)
@@ -157,16 +160,12 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
                 while ((mensaje = entrada.readLine()) != null) {
                     if (mensaje.equals("FIN_TABLERO")) {
                         // Cuando recibimos el fin del tablero, lo mostramos
-                        SwingUtilities.invokeLater(() -> areaTablero.setText(tableroCompleto.toString()));
+                        tablero.actualizarTablero(tableroCompleto.toString());
+                        SwingUtilities.invokeLater(() -> areaTablero.setText(tablero.toString()));
                         tableroCompleto.setLength(0); // Limpiar el StringBuilder para el siguiente tablero
                     } else {
                         tableroCompleto.append(mensaje).append("\n"); // Agregar la línea del tablero
                     }
-                    /*
-                    final String mensajeFinal = mensaje;
-                    //System.out.println("Tablero recibido: \n" + mensaje);  // Debug: Mostrar el tablero recibido
-                    SwingUtilities.invokeLater(() -> areaTablero.setText(mensajeFinal));
-                    */
                 }
             } catch (IOException e) {
                 e.printStackTrace();
