@@ -152,11 +152,21 @@ public class ClienteDeMarioBrosConInterfaz extends JFrame {
         @Override
         public void run() {
             try {
+                StringBuilder tableroCompleto = new StringBuilder();
                 String mensaje;
                 while ((mensaje = entrada.readLine()) != null) {
+                    if (mensaje.equals("FIN_TABLERO")) {
+                        // Cuando recibimos el fin del tablero, lo mostramos
+                        SwingUtilities.invokeLater(() -> areaTablero.setText(tableroCompleto.toString()));
+                        tableroCompleto.setLength(0); // Limpiar el StringBuilder para el siguiente tablero
+                    } else {
+                        tableroCompleto.append(mensaje).append("\n"); // Agregar la línea del tablero
+                    }
+                    /*
                     final String mensajeFinal = mensaje;
                     //System.out.println("Tablero recibido: \n" + mensaje);  // Debug: Mostrar el tablero recibido
                     SwingUtilities.invokeLater(() -> areaTablero.setText(mensajeFinal));
+                    */
                 }
             } catch (IOException e) {
                 e.printStackTrace();

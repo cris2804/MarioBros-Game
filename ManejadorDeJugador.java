@@ -58,6 +58,13 @@ public class ManejadorDeJugador extends Thread { // Extiende Thread para que cad
         //System.out.println("Enviando tablero al jugador " + idJugador + ":");
         System.out.println(tablero.toString());
         // Enviar el estado del tablero al cliente
-        salida.println(tablero.toString());
+        //salida.println(tablero.toString());
+        // Obtener la representación del tablero
+        String[] lineasTablero = tablero.obtenerRepresentacion();
+
+        for (String linea : lineasTablero) {
+            salida.println(linea); // Envía cada línea del tablero
+        }
+        salida.println("FIN_TABLERO"); // Indica el final del tablero
     }
 }

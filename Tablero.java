@@ -17,7 +17,7 @@ public class Tablero {
     void inicializarTablero() {
         for (int i = 0; i < mapa.length; i++) {
             for (int j = 0; j < mapa[i].length; j++) {
-                mapa[i][j] = '#'; // Inicializar con espacios vacíos
+                mapa[i][j] = VACIO; // Inicializar con espacios vacíos
             }
         }
     }
@@ -73,9 +73,15 @@ public class Tablero {
 
         //System.out.println("Jugador " + idJugador + " hizo: " + accion);
     }
+    public String[] obtenerRepresentacion() {
+        String[] representacion = new String[mapa.length];
+        for (int i = 0; i < mapa.length; i++) {
+            representacion[i] = new String(mapa[i]); // Convierte cada fila del mapa en una cadena
+        }
+        return representacion;
+    }
 
-
-    @Override
+    //@Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < mapa.length; i++) {
